@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/27 17:28:54 by jpaselt           #+#    #+#             */
+/*   Updated: 2025/01/27 17:29:44 by jpaselt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 char	*leftover(char **leftovers, char *result)
@@ -19,53 +31,50 @@ char	*leftover(char **leftovers, char *result)
 	return (result);
 }
 
-char	*read_save(int fd, int *bytesread, char **result)
+char	*read_save(int fd, char **buffer, int *bytesread, char **result)
 {
-	char	*buffer;
-
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-	{
-		free(*result);
-		*result = NULL;
-		return (*result);
-	}
-	buffer[BUFFER_SIZE] = '\0';
-	*bytesread = read(fd, buffer, BUFFER_SIZE);
+	*bytesread = read(fd, *buffer, BUFFER_SIZE);
 	if (*bytesread == 0 && (*result)[0] == '\0')
 	{
-		free(buffer);
 		free(*result);
 		*result = NULL;
+		free(*buffer);
 		return (*result);
 	}
 	if (*bytesread == 0)
-	{
-		free(buffer);
-		return (*result);
-	}
-	// buffer[*bytesread] = '\0';
-	*result = join(result, buffer);
-	return (free(buffer), *result); // kann NULL sein wenn join failed
+		return (free(*buffer),*result);
+	(*buffer)[*bytesread] = '\0';
+	join(result, *buffer);
+	return (*result); // kann NULL sein wenn join failed
 }
 
 char	*get_next_line(int fd)
 {
 	int			bytesread;
+	char		*buffer;
 	char		*result;
 	static char	*leftovers;
 
-	if (!duplicate(&result, &leftovers))
-		return (result); // return NULL malloc fail
-	while (nl_check(result) == 0)
+	result = NULL;
+	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, 0, 0) < 0)
 	{
-		if (!read_save(fd, &bytesread, &result))
-			return (result); // return NULL malloc fail
-		if (bytesread == 0)
-			return (result);
+		if (leftovers)
+		{
+			free(leftovers);
+			leftovers = NULL;
+		}
+		return (result);
 	}
-	result = leftover(&leftovers, result);
-	return (result);
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (result);
+	buffer[BUFFER_SIZE] = '\0';
+	if (!duplicate(&result, &leftovers))
+		return (result);
+	while (nl_check(result) == 0)
+		if (!read_save(fd, &buffer, &bytesread, &result) || bytesread == 0)
+			return (result); // return NULL malloc fail
+	return (free (buffer), leftover(&leftovers, result));
 }
 
 // int main()
@@ -90,6 +99,18 @@ char	*get_next_line(int fd)
 
 // 	rescpy = get_next_line(fd);
 //     printf("Result 2: %s\n", rescpy);
+//     free(rescpy);
+
+// 	rescpy = get_next_line(fd);
+//     printf("Result 3: %s\n", rescpy);
+//     free(rescpy);
+
+// 	rescpy = get_next_line(fd);
+//     printf("Result 4: %s\n", rescpy);
+//     free(rescpy);
+
+// 	rescpy = get_next_line(fd);
+//     printf("Result 5: %s\n", rescpy);
 //     free(rescpy);
 // 	return (0);
 // }
