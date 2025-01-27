@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:28:54 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/01/27 17:29:44 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/01/27 17:43:51 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*read_save(int fd, char **buffer, int *bytesread, char **result)
 		return (free(*buffer),*result);
 	(*buffer)[*bytesread] = '\0';
 	join(result, *buffer);
-	return (*result); // kann NULL sein wenn join failed
+	return (*result);
 }
 
 char	*get_next_line(int fd)
@@ -73,7 +73,7 @@ char	*get_next_line(int fd)
 		return (result);
 	while (nl_check(result) == 0)
 		if (!read_save(fd, &buffer, &bytesread, &result) || bytesread == 0)
-			return (result); // return NULL malloc fail
+			return (result);
 	return (free (buffer), leftover(&leftovers, result));
 }
 
