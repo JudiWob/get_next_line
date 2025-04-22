@@ -18,6 +18,8 @@ To solve this, while reading into a ```char *buffer``` of size (BUFFER_SIZE + 1)
 
 If no '/n' found, you need to store content of ```char *buffer``` and in a new string, and read into ```char *buffer``` again until you find '/n'. 
 
+If '/n' is found, the function needs to return a string of all charatcers that have been read into the buffer, ending with the '/n' character.
+
 Potential "leftover" characters after '\n' need to be stored in a static char, otherwise if ```char *get_next_line(int fd);``` gets called again, they will be lost,
 as this is the way ```read()``` works. 
 
