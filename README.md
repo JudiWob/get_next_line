@@ -38,4 +38,5 @@ char *get_next_line(int fd);
 
 ```
 ✅ Allowed functions
+
 read, malloc, free
