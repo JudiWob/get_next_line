@@ -10,7 +10,7 @@
 
 The goal is to write a function ```c char *get_next_line(int fd);``` that reads from a file descriptor and returns the next line from a file each time it's called.
 
-The function needs to work with a ```c #define BUFFER_SIZE``` that dictated how many bites get read when calling ```read()``` function.
+The function has to work with a ```c #define BUFFER_SIZE``` that dictates how many bites get read when calling ```read()``` function.
 
 This adds the difficulty in the sense that: Depening on the number of characters per line and BUFFER_SIZE, a read call might read too little or too many characters!
 
@@ -38,3 +38,4 @@ char *get_next_line(int fd);
 
 ```
 ✅ Allowed functions
+read, malloc, free
